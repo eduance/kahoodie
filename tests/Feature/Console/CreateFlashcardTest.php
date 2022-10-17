@@ -13,8 +13,8 @@ class CreateFlashcardTest extends TestCase
     {
         // Arrange
 
-        // Assert
+        // Act
 
-        // We can
+        // Assert
     }
 }
