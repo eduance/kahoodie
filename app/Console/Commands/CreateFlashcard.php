@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Answer;
-use App\Models\Question;
+use App\Models\Flashcard;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,7 +21,7 @@ class CreateFlashcard extends Command
      *
      * @var string
      */
-    protected $description = 'Creates a new Flashcard.';
+    protected $description = 'Create a new Flashcard.';
 
     /**
      * Execute the console command.
@@ -37,19 +37,9 @@ class CreateFlashcard extends Command
             'question' => $question,
             'answer' => $answer,
         ], [
-           'question' => ['required'],
-           'answer' => ['required'],
+           'question' => ['required', 'unique:flashcards,question'],
+           'answer' => ['required', 'unique:answers,text'],
         ]);
-
-        $validator->after(function ($validator) use ($question, $answer) {
-            if(Question::whereText($question)->first()) {
-                $validator->errors()->add('question', 'We already have a similar question.');
-            }
-
-            if(Answer::whereText($answer)->first()) {
-                $validator->errors()->add('answer', 'We already have a similar answer.');
-            }
-        });
 
         if($validator->fails()) {
             foreach ($validator->errors()->all() as $error) {
@@ -59,8 +49,8 @@ class CreateFlashcard extends Command
             return Command::FAILURE;
         }
 
-        $question = Question::create([
-            'text' => $question,
+        $question = Flashcard::create([
+            'question' => $question,
         ]);
 
         $answer = Answer::create([

@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Answer;
-use App\Models\Question;
+use App\Models\Flashcard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,7 +14,7 @@ class CreateFlashcardTest extends TestCase
     /**
      * @test
      */
-    public function a_player_can_create_a_card()
+    public function a_player_can_create_a_flashcard()
     {
         $this->artisan('flashcard:create')
             ->expectsQuestion('What question would you like the players to ask?', $question = 'What time is it?')
@@ -22,7 +22,7 @@ class CreateFlashcardTest extends TestCase
             ->expectsOutput('Congratulations! Your question has succesfully been added to Kahoodie.')
             ->assertSuccessful();
 
-        $this->assertInstanceOf(Question::class, $question = Question::whereText($question)->first());
+        $this->assertInstanceOf(Flashcard::class, $question = Flashcard::whereQuestion($question)->first());
         $this->assertInstanceOf(Answer::class, $answer = Answer::whereText($answer)->first());
         $this->assertEquals($question->answer->id, $answer->id);
     }
@@ -35,14 +35,15 @@ class CreateFlashcardTest extends TestCase
         array $validationData,
         array $error,
     ) {
-        Question::factory()->create(['text' => 'exists']);
+        Flashcard::factory()->create(['question' => 'exists']);
         Answer::factory()->create(['text' => 'exists']);
 
         $this->artisan('flashcard:create')
             ->expectsQuestion('What question would you like the players to ask?', $validationData['question'])
             ->expectsQuestion('What is the corresponding answer?', $validationData['answer'])
             ->expectsOutput($error['question'])
-            ->expectsOutput($error['answer']);
+            ->expectsOutput($error['answer'])
+            ->assertFailed();
     }
 
     public function provideValidationData()
@@ -66,8 +67,8 @@ class CreateFlashcardTest extends TestCase
                 ],
                 'error' =>
                     [
-                        'question' => 'We already have a similar question.',
-                        'answer' => 'We already have a similar answer.',
+                        'question' => 'The question already exists.',
+                        'answer' => 'The answer already exists.',
                     ]
             ],
         ];
