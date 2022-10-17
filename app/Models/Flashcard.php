@@ -28,4 +28,16 @@ class Flashcard extends Model
     {
         return $this->hasOne(Answer::class);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'question' => $this->question,
+            'answer' => $this->answer->text,
+        ];
+    }
 }
