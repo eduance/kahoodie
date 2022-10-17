@@ -15,8 +15,7 @@ If you do, make sure to follow these steps in the right order.
 
 ## Test it!
 
-Create a .env.testing file and reference the DB_HOST to mysql_test.
-Copy the APP_KEY from your .env file and paste it in your .env.testing.
+Run ```./vendor/bin/sail test``` to run the testsuite.
 
 ## About Kahoodie
 
