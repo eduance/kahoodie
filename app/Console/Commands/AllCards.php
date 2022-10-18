@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Flashcard;
 use Illuminate\Console\Command;
 
 class AllCards extends Command
@@ -11,14 +12,14 @@ class AllCards extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'flashcard:all';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'List all the existing flashcards.';
 
     /**
      * Execute the console command.
@@ -27,6 +28,17 @@ class AllCards extends Command
      */
     public function handle()
     {
+        $cards = Flashcard::with('answer')->get();
+
+        if($cards->count() === 0) {
+            $this->comment('Nothing to see here yet!');
+
+            return Command::SUCCESS;
+        }
+
+        $this->info('Here is a list of all your flashcards.');
+        $this->table(['ID', 'Question', 'Answer'], $cards);
+
         return Command::SUCCESS;
     }
 }
