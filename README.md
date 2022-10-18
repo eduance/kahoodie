@@ -17,6 +17,15 @@ If you do, make sure to follow these steps in the right order.
 
 Run ```./vendor/bin/sail test``` to run the testsuite.
 
+## Database structure
+
+```
+flashcard | attempts
+id        | id
+question  | question_id
+answer    | status
+```
+
 ## About Kahoodie
 
 Kahoodie is the coolest flash card app available on Github. As you might see, Kahoodie is an overcomplicated
