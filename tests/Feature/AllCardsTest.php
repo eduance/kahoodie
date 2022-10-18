@@ -29,4 +29,14 @@ class AllCardsTest extends TestCase
             ])
             ->assertSuccessful();
     }
+
+    /**
+     * @test
+     */
+    public function a_player_gets_notified_when_there_are_no_cards()
+    {
+        $this->artisan('flashcard:all')
+            ->expectsOutput('Nothing to see here yet!')
+            ->assertSuccessful();
+    }
 }

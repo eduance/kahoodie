@@ -28,14 +28,16 @@ class AllCards extends Command
      */
     public function handle()
     {
+        $cards = Flashcard::with('answer')->get();
+
+        if($cards->count() === 0) {
+            $this->comment('Nothing to see here yet!');
+
+            return Command::SUCCESS;
+        }
+
         $this->info('Here is a list of all your flashcards.');
-
-        $cards = Flashcard::with('answer')->get()->toArray();
-
-        $this->table(
-            ['ID', 'Question', 'Answer'],
-            $cards
-        );
+        $this->table(['ID', 'Question', 'Answer'], $cards);
 
         return Command::SUCCESS;
     }
