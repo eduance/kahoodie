@@ -21,6 +21,13 @@ class Kahoodie
     protected bool $booted = false;
 
     /**
+     * Get the game current state.
+     *
+     * @var bool
+     */
+    protected bool $started = false;
+
+    /**
      * Set the CLI Menu.
      *
      * @return void
@@ -38,6 +45,36 @@ class Kahoodie
     public function booted(): bool
     {
         return $this->booted;
+    }
+
+    /**
+     * Check whether the game is running.
+     *
+     * @return bool
+     */
+    public function isGameRunning(): bool
+    {
+        return $this->started;
+    }
+
+    /**
+     * Start the game.
+     *
+     * @return bool
+     */
+    public function startGame(): bool
+    {
+        return $this->started = true;
+    }
+
+    /**
+     * Start the game.
+     *
+     * @return bool
+     */
+    public function stopGame(): bool
+    {
+        return $this->started = false;
     }
 
     /**
