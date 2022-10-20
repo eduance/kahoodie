@@ -185,6 +185,7 @@ return [
         /*
          * Package Service Providers...
          */
+        \App\Providers\KahoodieServiceProvider::class,
 
         /*
          * Application Service Providers...

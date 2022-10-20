@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Domain\Flashcard\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,5 +16,6 @@ class Answer extends Model
      */
     protected $fillable = [
         'text',
+        'question_id'
     ];
 }

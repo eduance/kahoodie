@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Kahoodie\Manager;
 use Illuminate\Console\Command;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\CliMenu;
+use PhpSchool\CliMenu\Exception\InvalidTerminalException;
 
 class Kahoodie extends Command
 {
@@ -14,6 +16,8 @@ class Kahoodie extends Command
      * @var string
      */
     protected $signature = 'flashcard:interactive';
+
+    protected $manager;
 
     /**
      * The console command description.
@@ -27,14 +31,10 @@ class Kahoodie extends Command
      *
      * @return void
      *
-     * @throws \PhpSchool\CliMenu\Exception\InvalidTerminalException
+     * @throws InvalidTerminalException
      */
     public function handle()
     {
-        // We will start of by building our dream dialog.
-        // Then later on, we will move the right logic into its right place and refactor as we go.
-        // First, let's have some building fun. <3
-
         $logo = <<<ART
         ██╗  ██╗ █████╗ ██╗  ██╗ ██████╗  ██████╗ ██████╗ ██╗███████╗
         ██║ ██╔╝██╔══██╗██║  ██║██╔═══██╗██╔═══██╗██╔══██╗██║██╔════╝
@@ -45,19 +45,17 @@ class Kahoodie extends Command
         made with ♥ by Brandon for Studocu
         ART;
 
-        $itemCallable = function (CliMenu $menu) {
-            echo $menu->getSelectedItem()->getText();
-        };
+        $this->manager = app(Manager::class);
 
         $menu = (new CliMenuBuilder)
             ->addAsciiArt($logo)
             ->addLineBreak('=')
-            ->addItem('Start a new game', $itemCallable)
-            ->addItem('All cards', $itemCallable)
-            ->addItem('Create a card', $itemCallable)
+            ->addItem('Start a new game', $this->getCallback(Play::class))
+            ->addItem('All cards', $this->getCallback(AllCards::class))
+            ->addItem('Create a card', $this->getCallback(CreateFlashcard::class))
             ->addLineBreak('-')
-            ->addItem('STATS', $itemCallable)
-            ->addItem('RESET', $itemCallable)
+            ->addItem('STATS', $this->getCallback(Play::class))
+            ->addItem('RESET', $this->getCallback(Play::class))
             ->setExitButtonText('EXIT')
             ->setBackgroundColour('magenta')
             ->setForegroundColour('white')
@@ -66,5 +64,17 @@ class Kahoodie extends Command
             ->build();
 
         $menu->open();
+        $this->manager->boot();
+    }
+
+    protected function getCallback($command)
+    {
+        $closure = function (CliMenu $menu) use ($command) {
+            $this->manager->setMenu($menu);
+            $menu->close();
+            $this->call($command);
+        };
+
+        return $closure->bindTo($this);
     }
 }

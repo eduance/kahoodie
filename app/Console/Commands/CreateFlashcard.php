@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Answer;
-use App\Models\Flashcard;
+use Domain\Flashcard\Models\Answer;
+use Domain\Flashcard\Models\Question;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 
@@ -37,7 +37,7 @@ class CreateFlashcard extends Command
             'question' => $question,
             'answer' => $answer,
         ], [
-           'question' => ['required', 'unique:flashcards,question'],
+           'question' => ['required', 'unique:questions,question'],
            'answer' => ['required', 'unique:answers,text'],
         ]);
 
@@ -49,7 +49,7 @@ class CreateFlashcard extends Command
             return Command::FAILURE;
         }
 
-        $question = Flashcard::create([
+        $question = Question::create([
             'question' => $question,
         ]);
 

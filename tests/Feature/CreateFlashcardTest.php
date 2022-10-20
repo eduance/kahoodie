@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Answer;
-use App\Models\Flashcard;
+use Domain\Flashcard\Models\Answer;
+use Domain\Flashcard\Models\Question;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,7 +14,7 @@ class CreateFlashcardTest extends TestCase
     /**
      * @test
      */
-    public function a_player_can_create_a_flashcard()
+    public function a_player_can_create_a_question()
     {
         $this->artisan('flashcard:create')
             ->expectsQuestion('What question would you like the players to ask?', $question = 'What time is it?')
@@ -22,7 +22,7 @@ class CreateFlashcardTest extends TestCase
             ->expectsOutput('Congratulations! Your question has succesfully been added to Kahoodie.')
             ->assertSuccessful();
 
-        $this->assertInstanceOf(Flashcard::class, $question = Flashcard::whereQuestion($question)->first());
+        $this->assertInstanceOf(Question::class, $question = Question::whereQuestion($question)->first());
         $this->assertInstanceOf(Answer::class, $answer = Answer::whereText($answer)->first());
         $this->assertEquals($question->answer->id, $answer->id);
     }
@@ -35,7 +35,7 @@ class CreateFlashcardTest extends TestCase
         array $validationData,
         array $error,
     ) {
-        Flashcard::factory()->create(['question' => 'exists']);
+        Question::factory()->create(['question' => 'exists']);
         Answer::factory()->create(['text' => 'exists']);
 
         $this->artisan('flashcard:create')
