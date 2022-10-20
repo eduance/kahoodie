@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Kahoodie\Manager;
+use App\Kahoodie\Kahoodie;
 use Domain\Flashcard\ViewModels\GetAllCardsViewModel;
 use Illuminate\Console\Command;
 
@@ -27,7 +27,7 @@ class AllCards extends Command
      *
      * @return int
      */
-    public function handle(Manager $manager, GetAllCardsViewModel $viewModel)
+    public function handle(Kahoodie $manager, GetAllCardsViewModel $viewModel)
     {
         if($viewModel->questionCount() === 0) {
             $this->comment('Nothing to see here yet!');
@@ -37,6 +37,11 @@ class AllCards extends Command
 
         $this->info('Here is a list of all your flashcards.');
         $this->table(['Question', 'Answer'], $viewModel->questionsWithAnswers());
+
+        $continue = $this->ask('Type anything to continue');
+        if($continue) {
+            $manager->reopen();
+        }
 
         return Command::SUCCESS;
     }

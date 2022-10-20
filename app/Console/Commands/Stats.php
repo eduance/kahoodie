@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Kahoodie\Manager;
+use App\Kahoodie\Kahoodie;
 use Domain\Flashcard\ViewModels\GetStatsViewModel;
 use Illuminate\Console\Command;
 
@@ -26,8 +26,9 @@ class Stats extends Command
      * Execute the console command.
      *
      * @return int
+     * @throws \PhpSchool\CliMenu\Exception\InvalidTerminalException
      */
-    public function handle(GetStatsViewModel $viewModel, Manager $manager)
+    public function handle(GetStatsViewModel $viewModel, Kahoodie $manager)
     {
         $this->newLine();
         $this->info('Hoohaa. Look at those numbers, keep shining!');
@@ -42,5 +43,10 @@ class Stats extends Command
                $viewModel->relativeQuestionsWithAnswer(),
                $viewModel->relativeQuestionsWithCorrectAnswer()]
         ]);
+
+        $continue = $this->ask('Type anything to continue');
+        if($continue) {
+            $manager->reopen();
+        }
     }
 }

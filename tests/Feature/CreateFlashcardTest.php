@@ -20,6 +20,7 @@ class CreateFlashcardTest extends TestCase
             ->expectsQuestion('What question would you like the players to ask?', $question = 'What time is it?')
             ->expectsQuestion('What is the corresponding answer?', $answer = 'A great time to be alive.')
             ->expectsOutput('Congratulations! Your question has succesfully been added to Kahoodie.')
+            ->expectsQuestion('Type anything to continue', 'click')
             ->assertSuccessful();
 
         $this->assertInstanceOf(Question::class, $question = Question::whereQuestion($question)->first());

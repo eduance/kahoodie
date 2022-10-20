@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Kahoodie\Manager;
+use App\Kahoodie\Kahoodie;
 use Illuminate\Support\ServiceProvider;
 
 class KahoodieServiceProvider extends ServiceProvider
@@ -14,7 +14,7 @@ class KahoodieServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Manager::class);
+        $this->app->singleton(Kahoodie::class);
     }
 
     /**

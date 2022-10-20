@@ -4,9 +4,8 @@ namespace App\Listeners;
 
 use App\Events\ProcessQuestion;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
-class ChangeQuestionStatus
+class ChangeQuestionStatus implements ShouldQueue
 {
     /**
      * Create the event listener.

@@ -40,6 +40,8 @@ logic. So for example, a question can have a correct status when the attempts do
 but this is because in my experience there can be a lot of cases when a question should be correct even though
 the attempts don't match and it wouldn't make sense to put the attempts just on correct.
 
+Another advantage is that if you'd ever do a full game reset, you can leave the old attempts too.
+
 ## About Kahoodie
 
 Kahoodie is the coolest flash card app available on Github. As you might see, Kahoodie is an overcomplicated

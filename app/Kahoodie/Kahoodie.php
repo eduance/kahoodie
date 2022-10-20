@@ -4,7 +4,7 @@ namespace App\Kahoodie;
 
 use PhpSchool\CliMenu\CliMenu;
 
-class Manager
+class Kahoodie
 {
     /**
      * The Kahoodie interactive menu.
@@ -56,11 +56,12 @@ class Manager
     /**
      * Boot Kahoodie.
      *
-     * @return void
+     * @return bool
      */
-    public function boot()
+    public function boot($menu)
     {
         $this->booted = true;
+        $this->setMenu($menu);
     }
 
     /**
