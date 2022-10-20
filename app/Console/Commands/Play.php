@@ -120,7 +120,7 @@ class Play extends Command
                     $manager->stopGame();
                 }
             } catch (Exception $exception) {
-                $this->setMessage(fn () => $this->error('Something went wrong.'));
+                $this->setMessage(fn () => $this->error('Something went wrong: ' . $exception->getMessage()));
             }
         }
 
