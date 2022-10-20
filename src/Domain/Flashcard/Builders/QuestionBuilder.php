@@ -16,4 +16,14 @@ class QuestionBuilder extends Builder
     {
         return $this->whereStatus(QuestionStatus::Correct);
     }
+
+    /**
+     * Get the total answer count.
+     *
+     * @return int
+     */
+    public function answerCount()
+    {
+        return $this->has('attempts')->count();
+    }
 }

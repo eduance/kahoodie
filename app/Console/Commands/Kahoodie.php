@@ -54,7 +54,7 @@ class Kahoodie extends Command
             ->addItem('All cards', $this->getCallback(AllCards::class))
             ->addItem('Create a card', $this->getCallback(CreateFlashcard::class))
             ->addLineBreak('-')
-            ->addItem('STATS', $this->getCallback(Play::class))
+            ->addItem('STATS', $this->getCallback(Stats::class))
             ->addItem('RESET', $this->getCallback(Play::class))
             ->setExitButtonText('EXIT')
             ->setBackgroundColour('magenta')
@@ -64,13 +64,19 @@ class Kahoodie extends Command
             ->build();
 
         $menu->open();
-        $this->manager->boot();
     }
 
+    /**
+     * Call the command.
+     *
+     * @param $command
+     * @return \Closure|false|null
+     */
     protected function getCallback($command)
     {
         $closure = function (CliMenu $menu) use ($command) {
             $this->manager->setMenu($menu);
+            $this->manager->boot();
             $menu->close();
             $this->call($command);
         };

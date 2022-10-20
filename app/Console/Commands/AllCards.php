@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Kahoodie\Manager;
-use Domain\Flashcard\DataTransferObjects\QuestionData;
-use Domain\Flashcard\Models\Question;
 use Domain\Flashcard\ViewModels\GetAllCardsViewModel;
 use Illuminate\Console\Command;
 
@@ -38,7 +36,7 @@ class AllCards extends Command
         }
 
         $this->info('Here is a list of all your flashcards.');
-        $this->table(['Question', 'Answer'], $viewModel->questionCount());
+        $this->table(['Question', 'Answer'], $viewModel->questionsWithAnswers());
 
         return Command::SUCCESS;
     }
