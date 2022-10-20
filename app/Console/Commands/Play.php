@@ -105,7 +105,6 @@ class Play extends Command
         $this->warn('You are now in interactive mode, press CTRL+C to exit the terminal.');
 
         while($manager->isGameRunning()) {
-            $manager->startGame();
             $this->checkForCompletion();
 
             try {
@@ -121,6 +120,7 @@ class Play extends Command
                 }
             } catch (Exception $exception) {
                 $this->setMessage(fn () => $this->error('Something went wrong: ' . $exception->getMessage()));
+                $this->runGame();
             }
         }
 
