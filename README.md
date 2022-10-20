@@ -35,6 +35,11 @@ I separated the questions from the answers because questions and answers have a 
 A separate table named attempts takes care of all of our sent-in answers; this is so that we could eventually
 attach a user to who made the attempt.
 
+The one issue with this structure is that my questions can have a status that isn't tightly coupled with the
+logic. So for example, a question can have a correct status when the attempts don't even have a correct answer,
+but this is because in my experience there can be a lot of cases when a question should be correct even though
+the attempts don't match and it wouldn't make sense to put the attempts just on correct.
+
 ## About Kahoodie
 
 Kahoodie is the coolest flash card app available on Github. As you might see, Kahoodie is an overcomplicated

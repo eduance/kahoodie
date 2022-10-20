@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Domain\Flashcard\Models\Attempt;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class AttemptFactory extends Factory
 {
+    protected $model = Attempt::class;
+
     /**
      * Define the model's default state.
      *
@@ -16,7 +19,9 @@ class AttemptFactory extends Factory
      */
     public function definition()
     {
-        return [];
+        return [
+            'correct' => true,
+        ];
     }
 
     /**

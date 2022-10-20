@@ -10,13 +10,11 @@ class GetAllCardsViewModel
     /**
      * Get all the questions with their corresponding answers.
      *
-     * @return void
+     * @return array
      */
     public function questionsWithAnswers()
     {
-        $cards = Question::all();
-
-        $questionsWithAnswers = QuestionData::collection(Question::all())
+        return QuestionData::collection(Question::all())
             ->include('answer')
             ->except('status', 'id')
             ->toArray();

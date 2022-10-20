@@ -60,7 +60,7 @@ class Manager
      */
     public function boot()
     {
-        $this->boot = true;
+        $this->booted = true;
     }
 
     /**
