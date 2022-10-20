@@ -27,6 +27,7 @@ class AllCardsTest extends TestCase
                 [$firstCard->question, $firstCard->answer->text],
                 [$secondCard->question, $secondCard->answer->text]
             ])
+            ->expectsQuestion('Type anything to continue', 'click')
             ->assertSuccessful();
     }
 

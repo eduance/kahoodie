@@ -18,6 +18,16 @@ class QuestionBuilder extends Builder
     }
 
     /**
+     * Get the questions that have been correctly answered.
+     *
+     * @return self
+     */
+    public function whereIncorrect(): self
+    {
+        return $this->whereStatus(QuestionStatus::Incorrect);
+    }
+
+    /**
      * Get the total answer count.
      *
      * @return int

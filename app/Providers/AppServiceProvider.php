@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Kahoodie\Manager;
+use App\Kahoodie\Kahoodie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\ServiceProvider;
 

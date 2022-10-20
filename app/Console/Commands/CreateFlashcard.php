@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Kahoodie\Kahoodie;
 use Domain\Flashcard\Models\Answer;
 use Domain\Flashcard\Models\Question;
 use Illuminate\Console\Command;
@@ -28,7 +29,7 @@ class CreateFlashcard extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(Kahoodie $manager)
     {
         $question = $this->ask('What question would you like the players to ask?');
         $answer = $this->ask('What is the corresponding answer?');
@@ -58,8 +59,13 @@ class CreateFlashcard extends Command
         ]);
 
         $question->answer()->save($answer);
-
         $this->line('Congratulations! Your question has succesfully been added to Kahoodie.');
+
+        $continue = $this->ask('Type anything to continue');
+        if($continue) {
+            $manager->reopen();
+        }
+
         return Command::SUCCESS;
     }
 }

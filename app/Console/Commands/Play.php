@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Kahoodie\Manager;
+use App\Kahoodie\Kahoodie;
 use Domain\Flashcard\Actions\AnswerQuestion;
 use Domain\Flashcard\DataTransferObjects\QuestionData;
 use Domain\Flashcard\Enums\QuestionStatus;
@@ -54,7 +54,7 @@ class Play extends Command
      *
      * @param AnswerQuestion $action
      * @param GetGameViewModel $viewModel
-     * @param Manager $manager
+     * @param Menu $manager
      * @return int
      *
      * @throws InvalidTerminalException
@@ -62,7 +62,7 @@ class Play extends Command
     public function handle(
         AnswerQuestion $action,
         GetGameViewModel $viewModel,
-        Manager $manager
+        Kahoodie $manager
     ): int
     {
         if ($viewModel->questions()->count() === 0) {

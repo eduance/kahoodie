@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Kahoodie\Manager;
+use App\Kahoodie\Kahoodie;
 use Illuminate\Console\Command;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\Exception\InvalidTerminalException;
 
-class Kahoodie extends Command
+class Menu extends Command
 {
     /**
      * The name and signature of the console command.
@@ -45,7 +45,7 @@ class Kahoodie extends Command
         made with ♥ by Brandon for Studocu
         ART;
 
-        $this->manager = app(Manager::class);
+        $this->manager = app(Kahoodie::class);
 
         $menu = (new CliMenuBuilder)
             ->addAsciiArt($logo)
@@ -54,8 +54,8 @@ class Kahoodie extends Command
             ->addItem('All cards', $this->getCallback(AllCards::class))
             ->addItem('Create a card', $this->getCallback(CreateFlashcard::class))
             ->addLineBreak('-')
-            ->addItem('STATS', $this->getCallback(Play::class))
-            ->addItem('RESET', $this->getCallback(Play::class))
+            ->addItem('STATS', $this->getCallback(Stats::class))
+            ->addItem('RESET', $this->getCallback(Reset::class))
             ->setExitButtonText('EXIT')
             ->setBackgroundColour('magenta')
             ->setForegroundColour('white')
@@ -64,13 +64,12 @@ class Kahoodie extends Command
             ->build();
 
         $menu->open();
-        $this->manager->boot();
     }
 
     protected function getCallback($command)
     {
         $closure = function (CliMenu $menu) use ($command) {
-            $this->manager->setMenu($menu);
+            $this->manager->boot($menu);
             $menu->close();
             $this->call($command);
         };
