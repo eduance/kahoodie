@@ -96,7 +96,9 @@ class Play extends Command
 
         $this->line('Thanks for playing!');
 
-        $manager->reopen();
+        if($manager->booted()) {
+            $manager->reopen();
+        }
 
         return Command::SUCCESS;
     }

@@ -2,10 +2,12 @@
 
 namespace Domain\Flashcard\Actions;
 
+use App\Events\ProcessQuestion;
 use Domain\Flashcard\DataTransferObjects\QuestionData;
 use Domain\Flashcard\Enums\QuestionStatus;
 use Domain\Flashcard\Models\Attempt;
 use Domain\Flashcard\Models\Question;
+use Exception;
 
 class AnswerQuestion
 {
@@ -15,6 +17,8 @@ class AnswerQuestion
      * @param QuestionData $question
      * @param string $answer
      * @return bool
+     *
+     * @throws Exception
      */
     public function handle(QuestionData $question, string $answer): bool
     {
@@ -30,10 +34,8 @@ class AnswerQuestion
             'question_id' => $question['id'],
         ]);
 
-        $question = Question::find($question['id']);
-        $question->update([
-            'status' => $correct ? QuestionStatus::Correct : QuestionStatus::Incorrect
-        ]);
+        $question = Question::findOr($question['id'],  fn () => throw new Exception("Question not found"));
+        ProcessQuestion::dispatch($question, $correct ? QuestionStatus::Correct : QuestionStatus::Incorrect);
 
         return $correct;
     }
