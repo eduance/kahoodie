@@ -13,6 +13,8 @@ If you do, make sure to follow these steps in the right order.
 
 (4) Run ```./vendor/bin/sail artisan flashcard:interactive``` to boot Kahoodie.
 
+I have left all the branches for you to have a look inside at each stage of the process.
+
 ## Test it!
 
 Run ```./vendor/bin/sail test``` to run the testsuite.
