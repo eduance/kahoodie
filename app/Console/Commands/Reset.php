@@ -29,6 +29,8 @@ class Reset extends Command
      * Execute the console command.
      *
      * @return int
+     *
+     * @throws \PhpSchool\CliMenu\Exception\InvalidTerminalException
      */
     public function handle(Kahoodie $manager)
     {
