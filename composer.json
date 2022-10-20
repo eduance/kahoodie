@@ -5,12 +5,14 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.0.2",
+        "php": "^8.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "php-school/cli-menu": "^4.3"
+        "php-school/cli-menu": "^4.3",
+        "spatie/laravel-data": "^2.0",
+      "ext-pcntl": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -24,6 +26,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "Domain\\": "src/Domain/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }

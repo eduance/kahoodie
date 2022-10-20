@@ -20,11 +20,18 @@ Run ```./vendor/bin/sail test``` to run the testsuite.
 ## Database structure
 
 ```
-flashcard | attempts
-id        | id
-question  | question_id
-answer    | status
+questions | answers     | attempts   
+id        | id          | id          
+question  | question_id | question_id
+status    | text        | correct
+                        | answer
 ```
+
+This is the database structure I decided to choose after going through all the normalization steps.
+I separated the questions from the answers because questions and answers have a direct relationship.
+
+A separate table named attempts takes care of all of our sent-in answers; this is so that we could eventually
+attach a user to who made the attempt.
 
 ## About Kahoodie
 
@@ -33,6 +40,9 @@ project built with a test-driven-development fashion, but focuses mainly on show
 love for Laravel.
 
 ## Dependencies
+
+I utilized spatie/laravel-DTOs because I want to avoid having to guess what's inside my array. My actions will
+always take in a DTO.
 
 ## Deeper insights
 

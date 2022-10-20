@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Flashcard;
+use App\Kahoodie\Manager;
+use Domain\Flashcard\DataTransferObjects\QuestionData;
+use Domain\Flashcard\Models\Question;
 use Illuminate\Console\Command;
 
 class AllCards extends Command
@@ -26,9 +28,9 @@ class AllCards extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(Manager $manager)
     {
-        $cards = Flashcard::with('answer')->get();
+        $cards = Question::all();
 
         if($cards->count() === 0) {
             $this->comment('Nothing to see here yet!');
@@ -36,8 +38,13 @@ class AllCards extends Command
             return Command::SUCCESS;
         }
 
+        $questionsWithAnswers = QuestionData::collection(Question::all())
+            ->include('answer')
+            ->except('status', 'id')
+            ->toArray();
+
         $this->info('Here is a list of all your flashcards.');
-        $this->table(['ID', 'Question', 'Answer'], $cards);
+        $this->table(['Question', 'Answer'], $questionsWithAnswers);
 
         return Command::SUCCESS;
     }
