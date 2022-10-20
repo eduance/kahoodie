@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Domain\Flashcard\Models\Question;
-use Domain\Flashcard\ViewModels\GetFlashcardViewModel;
+use Domain\Flashcard\ViewModels\GetGameViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\App;
 use Tests\TestCase;
@@ -30,7 +30,7 @@ class QuestionTest extends TestCase
         Question::factory()->correct()->create();
         Question::factory()->create();
 
-        $flashcardViewModel = App::make(GetFlashcardViewModel::class);
+        $flashcardViewModel = App::make(GetGameViewModel::class);
 
         $this->assertEquals('50%', $flashcardViewModel->completionRate()->formatted);
     }
@@ -43,7 +43,7 @@ class QuestionTest extends TestCase
         Question::factory()->correct()->create();
         Question::factory()->create();
 
-        $flashcardViewModel = App::make(GetFlashcardViewModel::class);
+        $flashcardViewModel = App::make(GetGameViewModel::class);
 
         $this->assertEquals(50, $flashcardViewModel->completionRate()->raw);
     }
@@ -57,7 +57,7 @@ class QuestionTest extends TestCase
         Question::factory()->correct()->create();
         Question::factory()->create();
 
-        $flashcardViewModel = app(GetFlashcardViewModel::class);
+        $flashcardViewModel = app(GetGameViewModel::class);
 
         $this->assertEquals('67%', $flashcardViewModel->completionRate()->formatted);
     }

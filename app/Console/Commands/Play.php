@@ -7,9 +7,10 @@ use Domain\Flashcard\Actions\AnswerQuestion;
 use Domain\Flashcard\DataTransferObjects\QuestionData;
 use Domain\Flashcard\Enums\QuestionStatus;
 use Domain\Flashcard\Models\Question;
-use Domain\Flashcard\ViewModels\GetFlashcardViewModel;
+use Domain\Flashcard\ViewModels\GetGameViewModel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
+use PhpSchool\CliMenu\Exception\InvalidTerminalException;
 
 class Play extends Command
 {
@@ -52,15 +53,15 @@ class Play extends Command
      * Execute the console command.
      *
      * @param AnswerQuestion $action
-     * @param GetFlashcardViewModel $viewModel
+     * @param GetGameViewModel $viewModel
      * @param Manager $manager
      * @return int
      *
-     * @throws \PhpSchool\CliMenu\Exception\InvalidTerminalException
+     * @throws InvalidTerminalException
      */
     public function handle(
         AnswerQuestion $action,
-        GetFlashcardViewModel $viewModel,
+        GetGameViewModel $viewModel,
         Manager $manager
     ): int
     {
@@ -78,7 +79,7 @@ class Play extends Command
 
         $this->warn('You are now in interactive mode, press CTRL+C to exit the terminal.');
 
-        $answer = $this->startGame($viewModel);
+        $answer = $this->startGame();
         $answerChecked = $action->handle(question: $this->data, answer: $answer);
 
         if (! $answerChecked) {
@@ -90,7 +91,7 @@ class Play extends Command
         }
 
         if($this->confirm('Want to have another go?')) {
-            $this->startGame($viewModel);
+            $this->startGame();
         }
 
         $this->line('Thanks for playing!');
@@ -100,8 +101,10 @@ class Play extends Command
         return Command::SUCCESS;
     }
 
-    public function startGame(GetFlashcardViewModel $viewModel)
+    public function startGame()
     {
+        $viewModel = app(GetGameViewModel::class);
+
         $this->table(['ID', 'Question', 'Status'], $viewModel->questions()->toArray());
         $this->line(sprintf('You have completed %s of all the questions', $viewModel->completionRate()));
 

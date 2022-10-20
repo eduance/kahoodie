@@ -9,7 +9,7 @@ use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\PaginatedDataCollection;
 
-class GetFlashcardViewModel
+class GetGameViewModel
 {
     /**
      * Get the total questions.
