@@ -11,8 +11,9 @@ If you do, make sure to follow these steps in the right order.
 
 (3) Run ```./vendor/bin/sail artisan key:generate``` to create an application key.
 
-(4) Run ```./vendor/bin/sail artisan flashcard:interactive``` to boot Kahoodie.
+(4) Run ```./vendor/bin/sail artisan migrate --seed``` to boot Kahoodie.
 
+(5) Run ```./vendor/bin/sail artisan flashcard:interactive``` to boot Kahoodie.
 I have left all the branches for you to have a look inside at each stage of the process.
 
 ## Test it!

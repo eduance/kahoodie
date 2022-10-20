@@ -62,7 +62,7 @@ class Percentage
      * @param float $denominator
      * @return Percentage
      */
-    #[Pure] public static function from(float $numerator, float $denominator): Percentage
+    public static function from(float $numerator, float $denominator): Percentage
     {
         if ($denominator === 0.0) {
             return new self(0);

@@ -95,7 +95,11 @@ class Play extends Command
             return Command::SUCCESS;
         }
 
-        $this->checkForCompletion();
+        if ($this->viewModel->completionRate()->raw === 100.0) {
+            $this->info('Congratulations! You finished all the questions.');
+
+            return Command::SUCCESS;
+        }
 
         $manager->startGame();
         $this->warn('You are now in interactive mode, press CTRL+C to exit the terminal.');
@@ -104,19 +108,16 @@ class Play extends Command
             $this->checkForCompletion();
 
             try {
-                $answer = $this->runGame();
-
-                $answerChecked = $action->handle(question: $this->data, answer: $answer);
-                $answerChecked ? $this->line('Nice job, correct!') : $this->error('Oops, try again.');
+                $this->runGame($action);
 
                 if($this->confirm('Want to have another go?')) {
-                    $this->runGame();
+                    $this->runGame($action);
                 }else{
                     $manager->stopGame();
                 }
             } catch (Exception $exception) {
                 $this->setMessage(fn () => $this->error('Something went wrong: ' . $exception->getMessage()));
-                $this->runGame();
+                $this->runGame($action);
             }
         }
 
@@ -132,10 +133,11 @@ class Play extends Command
     /**
      * Run the game.
      *
-     * @return mixed
+     * @param AnswerQuestion $action
+     * @return int
      * @throws ValidationException
      */
-    protected function runGame(): mixed
+    protected function runGame(AnswerQuestion $action): int
     {
         $this->table(['ID', 'Question', 'Status'], $this->viewModel->questions()->toArray());
         $this->line(sprintf('You have completed %s of all the questions', $this->viewModel->completionRate()));
@@ -153,30 +155,39 @@ class Play extends Command
                 $this->setMessage(fn () => $this->error($error));
             }
 
-            $this->runGame();
+            $this->runGame($action);
         }
 
         $this->data = QuestionData::from(Question::findOrFail($validator->validated()['question']));
 
         if ($this->data->status === QuestionStatus::Correct) {
             $this->setMessage(fn () => $this->error('You cannot practice the same question multiple times.'));
-            $this->runGame();
+            $this->runGame($action);
         }
 
-        return $this->ask($this->data->question);
+        $answer = $this->ask($this->data->question);
+
+        $answerChecked = $action->handle(question: $this->data, answer: $answer);
+        $answerChecked ?
+            $this->setMessage(fn () => $this->line('Nice job, correct!'))
+            : $this->setMessage(fn () => $this->error('Oops, try again.') );
+
+        if(config('app.env') === 'testing') {
+            return Command::SUCCESS;
+        }
+
+        return $this->runGame($action);
     }
 
     /**
      * Check whether the player has reached 100% score.
      *
-     * @return int|void
+     * @return void
      */
     protected function checkForCompletion()
     {
         if ($this->viewModel->completionRate()->raw === 100.0) {
             $this->info('Congratulations! You finished all the questions.');
-
-            return Command::SUCCESS;
         }
     }
 

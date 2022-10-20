@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Domain\Flashcard\Enums\QuestionStatus;
 use Domain\Flashcard\Models\Answer;
 use Domain\Flashcard\Models\Attempt;
 use Domain\Flashcard\Models\Question;
