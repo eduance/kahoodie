@@ -18,7 +18,7 @@ class QuestionSeeder extends Seeder
     {
         Question::factory()->has(Answer::factory()->state(['text' => 2013]))->create(['question' => 'When was Studocu born?']);
         Question::factory()->has(Answer::factory()->state(['text' => 'Keizersgracht']))->create(['question' => 'Where is Studocu situated?']);
-        Question::factory()->has(Answer::factory()->state(['text' => 'Dusty']))->create(['question' => 'What is Studocus dog named?']);
+        Question::factory()->has(Answer::factory()->state(['text' => 'Dusty']))->create(['question' => 'What is the name of the Studocu dog?']);
         Question::factory()->has(Answer::factory()->state(['text' => 'Michael Scott']))->create(['question' => 'Who is the best office character?']);
         Question::factory()->has(Answer::factory()->state(['text' => 'Conan O Brien']))->create(['question' => 'Funniest talkshow host ever']);
     }

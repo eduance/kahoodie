@@ -8,9 +8,13 @@ use Domain\Flashcard\DataTransferObjects\QuestionData;
 use Domain\Flashcard\Enums\QuestionStatus;
 use Domain\Flashcard\Models\Question;
 use Domain\Flashcard\ViewModels\GetGameViewModel;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use phpDocumentor\Reflection\Types\Callable_;
 use PhpSchool\CliMenu\Exception\InvalidTerminalException;
+use Psy\Shell;
 
 class Play extends Command
 {
@@ -43,55 +47,81 @@ class Play extends Command
     protected $data;
 
     /**
+     * The view model instance we are collecting our data from.
+     *
+     * @var GetGameViewModel $viewModel
+     */
+    protected $viewModel;
+
+    /**
+     * Set the text to be shown during the execution.
+     *
+     * @var callable $text
+     */
+    protected $customMessage;
+
+    /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Practice using Kahoodie!';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->viewModel = app(GetGameViewModel::class);
+    }
+
     /**
      * Execute the console command.
      *
      * @param AnswerQuestion $action
-     * @param GetGameViewModel $viewModel
-     * @param Menu $manager
+     * @param Kahoodie $manager
      * @return int
      *
      * @throws InvalidTerminalException
+     * @throws ValidationException
      */
     public function handle(
         AnswerQuestion $action,
-        GetGameViewModel $viewModel,
         Kahoodie $manager
     ): int
     {
-        if ($viewModel->questions()->count() === 0) {
+        if ($this->viewModel->questions()->count() === 0) {
             $this->line('Nothing to see here.');
 
             return Command::SUCCESS;
         }
 
-        if ($viewModel->completionRate()->raw === 100.0) {
+        if ($this->viewModel->completionRate()->raw === 100.0) {
             $this->info('Congratulations! You finished all the questions.');
 
             return Command::SUCCESS;
         }
 
+        $manager->startGame();
         $this->warn('You are now in interactive mode, press CTRL+C to exit the terminal.');
 
-        $answer = $this->startGame();
-        $answerChecked = $action->handle(question: $this->data, answer: $answer);
+        while($manager->isGameRunning()) {
+            $manager->startGame();
+            $this->checkForCompletion();
 
-        if (! $answerChecked) {
-            $this->error('Oops, try again.');
-        }
+            try {
+                $answer = $this->runGame();
 
-        if ($answerChecked) {
-            $this->line('Nice job, correct!');
-        }
+                $answerChecked = $action->handle(question: $this->data, answer: $answer);
+                $answerChecked ? $this->line('Nice job, correct!') : $this->error('Oops, try again.');
 
-        if($this->confirm('Want to have another go?')) {
-            $this->startGame();
+                if($this->confirm('Want to have another go?')) {
+                    $this->runGame();
+                }else{
+                    $manager->stopGame();
+                }
+            } catch (Exception $exception) {
+                $this->setMessage(fn () => $this->error('Something went wrong.'));
+            }
         }
 
         $this->line('Thanks for playing!');
@@ -103,40 +133,63 @@ class Play extends Command
         return Command::SUCCESS;
     }
 
-    public function startGame()
+    /**
+     * Run the game.
+     *
+     * @return mixed
+     * @throws ValidationException
+     */
+    protected function runGame(): mixed
     {
-        $viewModel = app(GetGameViewModel::class);
+        $this->table(['ID', 'Question', 'Status'], $this->viewModel->questions()->toArray());
+        $this->line(sprintf('You have completed %s of all the questions', $this->viewModel->completionRate()));
 
-        $this->table(['ID', 'Question', 'Status'], $viewModel->questions()->toArray());
-        $this->line(sprintf('You have completed %s of all the questions', $viewModel->completionRate()));
+        if($this->customMessage) {
+            $this->newLine();
+            tap($this->customMessage, fn ($customMessage) => $customMessage());
+        }
 
         $this->question = $this->ask('What question would you like to practice?');
 
         $validator = $this->validate();
         if ($validator->fails()) {
             foreach ($validator->errors()->all() as $error) {
-                $this->error($error);
+                $this->setMessage(fn () => $this->error($error));
             }
 
-            $this->newLine(2);
-            $this->startGame($viewModel);
+            $this->runGame();
         }
 
         $this->data = QuestionData::from(Question::findOrFail($validator->validated()['question']));
 
         if ($this->data->status === QuestionStatus::Correct) {
-            $this->error('You cannot practice the same question multiple times.');
-
-            return 1;
+            $this->setMessage(fn () => $this->error('You cannot practice the same question multiple times.'));
+            $this->runGame();
         }
 
         return $this->ask($this->data->question);
     }
 
     /**
+     * Check whether the player has reached 100% score.
+     *
+     * @return int|void
+     */
+    protected function checkForCompletion()
+    {
+        if ($this->viewModel->completionRate()->raw === 100.0) {
+            $this->info('Congratulations! You finished all the questions.');
+
+            return Command::SUCCESS;
+        }
+    }
+
+    /**
      * Validate the question.
      *
      * @return \Illuminate\Contracts\Validation\Validator|\Illuminate\Validation\Validator
+     *
+     * @throws ValidationException
      */
     protected function validate()
     {
@@ -146,5 +199,16 @@ class Play extends Command
                     ['required', 'exists:questions,id', 'integer']
             ]
         );
+    }
+
+    /**
+     * Set the game error message.
+     *
+     * @param callable $text
+     * @return void
+     */
+    protected function setMessage(callable $text)
+    {
+        $this->customMessage = $text;
     }
 }
