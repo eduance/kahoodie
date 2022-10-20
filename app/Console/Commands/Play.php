@@ -95,11 +95,7 @@ class Play extends Command
             return Command::SUCCESS;
         }
 
-        if ($this->viewModel->completionRate()->raw === 100.0) {
-            $this->info('Congratulations! You finished all the questions.');
-
-            return Command::SUCCESS;
-        }
+        $this->checkForCompletion();
 
         $manager->startGame();
         $this->warn('You are now in interactive mode, press CTRL+C to exit the terminal.');
