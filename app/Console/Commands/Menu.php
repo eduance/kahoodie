@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Kahoodie\Game;
 use App\Kahoodie\Kahoodie;
 use Illuminate\Console\Command;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
@@ -70,6 +71,7 @@ class Menu extends Command
     {
         $closure = function (CliMenu $menu) use ($command) {
             $this->manager->boot($menu);
+            $this->manager->setGame(new Game());
             $menu->close();
             $this->call($command);
         };
