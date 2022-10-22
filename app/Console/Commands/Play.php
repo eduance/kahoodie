@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Kahoodie\Game;
 use App\Kahoodie\Kahoodie;
+use App\Rules\NoCorrectQuestionsAllowed;
 use Domain\Flashcard\Actions\AnswerQuestion;
 use Domain\Flashcard\DataTransferObjects\QuestionData;
 use Domain\Flashcard\Enums\QuestionStatus;
@@ -61,6 +63,27 @@ class Play extends Command
     protected $customMessage;
 
     /**
+     * Get the game manager.
+     *
+     * @var Kahoodie $manager
+     */
+    protected Kahoodie $manager;
+
+    /**
+     * Get the validator.
+     *
+     * @var $validator
+     */
+    protected $validator;
+
+    /**
+     * The action to validate any answers.
+     *
+     * @var AnswerQuestion $action
+     */
+    protected $action;
+
+    /**
      * The console command description.
      *
      * @var string
@@ -72,23 +95,23 @@ class Play extends Command
         parent::__construct();
 
         $this->viewModel = app(GetGameViewModel::class);
+        $this->manager = app(Kahoodie::class);
+        $this->action = app(AnswerQuestion::class);
     }
 
     /**
      * Execute the console command.
      *
-     * @param AnswerQuestion $action
-     * @param Kahoodie $manager
      * @return int
      *
-     * @throws InvalidTerminalException
      * @throws ValidationException
+     * @throws InvalidTerminalException
      */
     public function handle(
-        AnswerQuestion $action,
-        Kahoodie $manager
     ): int
     {
+        $game = $this->manager->getGame();
+
         if ($this->viewModel->questions()->count() === 0) {
             $this->line('Nothing to see here.');
 
@@ -101,31 +124,29 @@ class Play extends Command
             return Command::SUCCESS;
         }
 
-        $manager->startGame();
+        $game->start();
         $this->warn('You are now in interactive mode, press CTRL+C to exit the terminal.');
 
-        while($manager->isGameRunning()) {
+        while($game->isRunning()) {
             $this->checkForCompletion();
 
             try {
-                $this->runGame($action);
+                $this->runGame();
 
                 if($this->confirm('Want to have another go?')) {
-                    $this->runGame($action);
+                    $this->runGame();
                 }else{
-                    $manager->stopGame();
+                    $game->stop();
                 }
             } catch (Exception $exception) {
                 $this->setMessage(fn () => $this->error('Something went wrong: ' . $exception->getMessage()));
-                $this->runGame($action);
+                $this->runGame();
             }
         }
 
         $this->line('Thanks for playing!');
 
-        if($manager->booted()) {
-            $manager->reopen();
-        }
+        $this->manager->reopen();
 
         return Command::SUCCESS;
     }
@@ -133,50 +154,38 @@ class Play extends Command
     /**
      * Run the game.
      *
-     * @param AnswerQuestion $action
      * @return int
+     *
      * @throws ValidationException
+     * @throws Exception
      */
-    protected function runGame(AnswerQuestion $action): int
+    protected function runGame(): int
     {
         $this->table(['ID', 'Question', 'Status'], $this->viewModel->questions()->toArray());
         $this->line(sprintf('You have completed %s of all the questions', $this->viewModel->completionRate()));
 
-        if($this->customMessage) {
-            $this->newLine();
-            tap($this->customMessage, fn ($customMessage) => $customMessage());
-        }
+        $this->displayMessages();
 
         $this->question = $this->ask('What question would you like to practice?');
 
-        $validator = $this->validate();
-        if ($validator->fails()) {
-            foreach ($validator->errors()->all() as $error) {
-                $this->setMessage(fn () => $this->error($error));
-            }
+        $this->validate();
 
-            $this->runGame($action);
-        }
+        $validated = collect($this->validator->validated());
+        $question = Question::findOrFail($validated->get('question'));
 
-        $this->data = QuestionData::from(Question::findOrFail($validator->validated()['question']));
-
-        if ($this->data->status === QuestionStatus::Correct) {
-            $this->setMessage(fn () => $this->error('You cannot practice the same question multiple times.'));
-            $this->runGame($action);
-        }
-
+        $this->data = QuestionData::from($question);
         $answer = $this->ask($this->data->question);
 
-        $answerChecked = $action->handle(question: $this->data, answer: $answer);
-        $answerChecked ?
-            $this->setMessage(fn () => $this->line('Nice job, correct!'))
+        $answerChecked = $this->action->handle(question: $this->data, answer: $answer);
+        $answerChecked
+            ? $this->setMessage(fn () => $this->line('Nice job, correct!'))
             : $this->setMessage(fn () => $this->error('Oops, try again.') );
 
         if(config('app.env') === 'testing') {
             return Command::SUCCESS;
         }
 
-        return $this->runGame($action);
+        return $this->runGame();
     }
 
     /**
@@ -184,7 +193,7 @@ class Play extends Command
      *
      * @return void
      */
-    protected function checkForCompletion()
+    protected function checkForCompletion(): void
     {
         if ($this->viewModel->completionRate()->raw === 100.0) {
             $this->info('Congratulations! You finished all the questions.');
@@ -192,20 +201,40 @@ class Play extends Command
     }
 
     /**
+     * The logic for displaying any messages.
+     *
+     * @return void
+     */
+    protected function displayMessages()
+    {
+        if($this->customMessage) {
+            $this->newLine();
+            tap($this->customMessage, fn ($customMessage) => $customMessage());
+        }
+    }
+
+    /**
      * Validate the question.
      *
-     * @return \Illuminate\Contracts\Validation\Validator|\Illuminate\Validation\Validator
+     * @return void
      *
      * @throws ValidationException
      */
     protected function validate()
     {
-        return Validator::make(['question' => $this->question],
+        $this->validator = Validator::make(['question' => $this->question],
             [
-                'question' =>
-                    ['required', 'exists:questions,id', 'integer']
+                'question' => ['bail', 'required', 'exists:questions,id', 'integer', new NoCorrectQuestionsAllowed]
             ]
         );
+
+        if ($this->validator->fails()) {
+            foreach ($this->validator->errors()->all() as $error) {
+                $this->setMessage(fn () => $this->error($error));
+            }
+
+            $this->runGame();
+        }
     }
 
     /**

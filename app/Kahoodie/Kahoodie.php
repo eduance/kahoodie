@@ -3,6 +3,7 @@
 namespace App\Kahoodie;
 
 use PhpSchool\CliMenu\CliMenu;
+use PhpSchool\CliMenu\Exception\InvalidTerminalException;
 
 class Kahoodie
 {
@@ -21,6 +22,13 @@ class Kahoodie
     protected bool $booted = false;
 
     /**
+     * Booted upon calling of the main command.
+     *
+     * @var Game $game
+     */
+    protected Game $game;
+
+    /**
      * Get the game current state.
      *
      * @var bool
@@ -32,7 +40,7 @@ class Kahoodie
      *
      * @return void
      */
-    public function setMenu(CliMenu $menu)
+    protected function setMenu(CliMenu $menu)
     {
         $this->menu = $menu;
     }
@@ -48,42 +56,12 @@ class Kahoodie
     }
 
     /**
-     * Check whether the game is running.
-     *
-     * @return bool
-     */
-    public function isGameRunning(): bool
-    {
-        return $this->started;
-    }
-
-    /**
-     * Start the game.
-     *
-     * @return bool
-     */
-    public function startGame(): bool
-    {
-        return $this->started = true;
-    }
-
-    /**
-     * Start the game.
-     *
-     * @return bool
-     */
-    public function stopGame(): bool
-    {
-        return $this->started = false;
-    }
-
-    /**
      * Open Kahoodie if accessed via menu.
      *
      * @return void
-     * @throws \PhpSchool\CliMenu\Exception\InvalidTerminalException
+     * @throws InvalidTerminalException
      */
-    public function reopen()
+    public function reopen(): void
     {
         if($this->booted()) {
             $this->menu->open();
@@ -93,12 +71,14 @@ class Kahoodie
     /**
      * Boot Kahoodie.
      *
-     * @return bool
+     * @param $menu
+     * @return void
      */
-    public function boot($menu)
+    public function boot($menu): void
     {
-        $this->booted = true;
         $this->setMenu($menu);
+
+        $this->booted = true;
     }
 
     /**
@@ -109,5 +89,26 @@ class Kahoodie
     public function getMenu(): CliMenu
     {
         return $this->menu;
+    }
+
+    /**
+     * Set the instance of a game.
+     *
+     * @param Game $game
+     * @return void
+     */
+    public function setGame(Game $game): void
+    {
+        $this->game = $game;
+    }
+
+    /**
+     * Get the game object.
+     *
+     * @return Game
+     */
+    public function getGame(): Game
+    {
+        return $this->game;
     }
 }

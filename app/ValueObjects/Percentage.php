@@ -36,8 +36,8 @@ class Percentage
         float $value
     ) {
         $this->value = $value;
-        $this->raw = (int) round($this->value * 100);
-        $this->formatted = $this->format();
+        $this->raw = $this->format();
+        $this->formatted = $this->format() . '%';
     }
 
     public function __toString(): string
@@ -48,11 +48,11 @@ class Percentage
     /**
      * Format the value.
      *
-     * @return string
+     * @return float
      */
     protected function format()
     {
-        return (int) round($this->value * 100) . '%';
+        return round($this->value * 100);
     }
 
     /**
