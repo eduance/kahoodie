@@ -37,7 +37,6 @@ class PlayGameTest extends TestCase
             ])
             ->expectsQuestion('What question would you like to practice?', $unansweredQuestion->id)
             ->expectsQuestion($unansweredQuestion->question, $unansweredQuestion->answer->text)
-            ->expectsConfirmation('Want to have another go?', 'no')
             ->expectsOutput('Thanks for playing!')
             ->assertSuccessful();
     }

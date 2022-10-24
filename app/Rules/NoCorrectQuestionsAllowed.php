@@ -42,6 +42,6 @@ class NoCorrectQuestionsAllowed implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return "You can't answer the same question twice.";
     }
 }
