@@ -2,6 +2,7 @@
 
 namespace App\Kahoodie;
 
+use Illuminate\Console\Command;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\Exception\InvalidTerminalException;
 
@@ -27,6 +28,13 @@ class Kahoodie
      * @var Game $game
      */
     protected Game $game;
+
+    /**
+     * The command to render output to.
+     *
+     * @var Command $view
+     */
+    protected Command $view;
 
     /**
      * Get the game current state.
@@ -72,13 +80,25 @@ class Kahoodie
      * Boot Kahoodie.
      *
      * @param $menu
+     * @param $class
      * @return void
      */
     public function boot($menu): void
     {
         $this->setMenu($menu);
+        $this->setGame(new Game());
 
         $this->booted = true;
+    }
+
+    /**
+     * Get the view.
+     *
+     * @return mixed
+     */
+    public function getView()
+    {
+        return $this->view;
     }
 
     /**
@@ -110,5 +130,10 @@ class Kahoodie
     public function getGame(): Game
     {
         return $this->game;
+    }
+
+    public function setView($view)
+    {
+        $this->view = $view;
     }
 }
