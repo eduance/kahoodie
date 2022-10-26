@@ -1,4 +1,4 @@
-<p align="center"><a href="https://kahoodie.io" target="_blank"><img src="https://i.ibb.co/DkTLrSC/High-Resolution-Logo-Transparent-Background.png" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://kahoodie.io" target="_blank"><img src="https://i.ibb.co/Y0j5zBD/logo-no-background.png" width="400" alt="Laravel Logo"></a></p>
 
 ## Get started easily
 
