@@ -43,7 +43,7 @@ class Menu extends Command
         ██╔═██╗ ██╔══██║██╔══██║██║   ██║██║   ██║██║  ██║██║██╔══╝
         ██║  ██╗██║  ██║██║  ██║╚██████╔╝╚██████╔╝██████╔╝██║███████╗
         ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═════╝ ╚═╝╚══════╝
-        made with ♥ by Brandon for Studocu
+        made with ♥ by Brandon
         ART;
 
         $this->manager = app(Kahoodie::class);
