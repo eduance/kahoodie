@@ -97,5 +97,3 @@ some stuff, not to flex but rather to show how comfortable I am with Laravel, bu
 I am 23 years old and have been coding for over 10 years and have been loving it so far. The current app you're looking at is a tad different than the one you were
 supposed to receive, but I didn't persist due to.. 'overcomplications' so to speak. Well, enjoy and and feel free to
 reach out to ask any questions.
-
-You can contact me at brandon@eduance.io or my phone number +31657769941.
